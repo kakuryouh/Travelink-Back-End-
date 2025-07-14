@@ -1,0 +1,110 @@
+import '../css/app.css';
+import './bootstrap.js';
+import '../css/index.css';
+
+import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createRoot } from 'react-dom/client';
+import { initializeTheme } from './hooks/use-appearance';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'; // <-- 1. Import the provider
+
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+const customTheme = extendTheme({
+  colors: {
+    brand: {
+      50: "#e6f1ff",
+      100: "#b8d5ff",
+      200: "#8ab9ff",
+      300: "#5c9dff",
+      400: "#2e81ff",
+      500: "#1467e6", // primary brand color
+      600: "#0d50b3",
+      700: "#073a80",
+      800: "#02234d",
+      900: "#000d1a",
+    },
+  },
+  fonts: {
+    heading: "'Poppins', sans-serif",
+    body: "'Inter', sans-serif",
+  },
+  components: {
+    Button: {
+      // Base styles for all buttons
+      baseStyle: {
+        fontWeight: "600", // Corresponds to your "black" in Poppins if available, otherwise bold
+        borderRadius: "md",
+        // You can add other base styles here, e.g., transition
+        transitionProperty: "common",
+        transitionDuration: "normal",
+      },
+      // Variants
+      variants: {
+        // Customizing the 'solid' variant
+        solid: (props: any) => ({ // props can be used for colorMode specifics if needed
+          bg: "brand.500", // Use your brand color
+          color: "white",
+          _hover: {
+            bg: "brand.600", // Darker brand color on hover
+            _disabled: { // Keep disabled state consistent
+              bg: "brand.500",
+              opacity: 0.6, // Add opacity for disabled state
+            },
+          },
+          _active: {
+            bg: "brand.700", // Even darker for active state
+          },
+          _disabled: { // General disabled state
+            bg: "brand.300",
+            opacity: 0.6,
+            cursor: "not-allowed",
+          }
+        }),
+        // You can define other variants like 'outline', 'ghost' here
+        // Example for 'outline':
+        outline: (props: any) => ({
+          borderColor: "brand.500",
+          color: "brand.500",
+          _hover: {
+            bg: "brand.50", // Light brand color for hover background
+            borderColor: "brand.600",
+          },
+          _active: {
+            bg: "brand.100",
+          },
+          _disabled: {
+            borderColor: "brand.300",
+            color: "brand.300",
+            opacity: 0.6,
+            cursor: "not-allowed",
+          }
+        }),
+      },
+     
+    },
+  
+  },
+ 
+});
+
+createInertiaApp({
+    title: (title) => `${title}  ${appName}`,
+    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+    setup({ el, App, props }) {
+        const root = createRoot(el);
+
+        root.render(
+            <ChakraProvider theme = {customTheme}>
+                <App {...props} />
+            </ChakraProvider>
+        );
+    },
+    progress: {
+        color: '#4B5563',
+    },
+});
+
+// This will set light / dark mode on load...
+initializeTheme();
