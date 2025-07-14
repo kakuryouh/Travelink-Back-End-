@@ -26,7 +26,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard.view');
     }
     return redirect()->route('login');
-});
+})->name('login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Logout Route
