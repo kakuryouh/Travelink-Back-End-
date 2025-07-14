@@ -19,7 +19,7 @@ test('password can be confirmed', function () {
         'password' => 'password',
     ]);
 
-    $response->assertRedirect('dashboard.view');
+    $response->assertRedirect('/dashboard');
     $response->assertSessionHasNoErrors();
 });
 
